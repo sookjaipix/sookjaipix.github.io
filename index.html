@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sook Jai Pix – ระบบจองคิวช่างภาพ</title>
+  <meta name="description" content="ระบบจองคิวช่างภาพ Sook Jai Pix ใช้งานได้แบบ Offline ไม่ต้องเชื่อมต่ออินเทอร์เน็ต" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- html2canvas CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="38" height="38" rx="10" fill="#111"/>
+            <circle cx="19" cy="19" r="8" stroke="white" stroke-width="2.5"/>
+            <circle cx="19" cy="19" r="4" fill="white"/>
+            <rect x="25" y="8" width="5" height="3.5" rx="1" fill="white"/>
+            <rect x="8" y="8" width="9" height="3.5" rx="1" fill="white" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-name">SOOK JAI PIX</h1>
+          <p class="brand-sub">ระบบจองคิวช่างภาพ</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <span class="offline-badge" id="offlineBadge">
+          <span class="offline-dot"></span>
+          โหมดออฟไลน์
+        </span>
+        <button class="btn-icon" id="btnBookingList" title="รายการจองทั้งหมด">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        </button>
+        <button class="btn-icon" id="btnExportJSON" title="Export JSON Backup">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <label class="btn-icon" title="Import JSON Backup">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <input type="file" id="importJSON" accept=".json" style="display:none;" />
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+
+    <!-- LEFT: FORM -->
+    <section class="form-section" id="formSection">
+
+      <!-- Booking Number -->
+      <div class="card booking-no-card">
+        <div class="booking-no-row">
+          <div>
+            <p class="label-small">เลขที่ใบจอง</p>
+            <p class="booking-no" id="bookingNoDisplay">BK-20260610-001</p>
+          </div>
+          <div class="booking-status">
+            <span class="status-badge status-new">ใหม่</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Info -->
+      <div class="card">
+        <h2 class="card-title">
+          <span class="card-icon">👤</span> ข้อมูลผู้จอง
+        </h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="customerName">ชื่อผู้จอง <span class="req">*</span></label>
+            <input type="text" id="customerName" placeholder="กรอกชื่อ-นามสกุล" required />
+          </div>
+          <div class="form-group">
+            <label for="phone">เบอร์ติดต่อ <span class="req">*</span></label>
+            <input type="tel" id="phone" placeholder="0812345678" inputmode="numeric" pattern="[0-9]*" required />
+          </div>
+          <div class="form-group">
+            <label for="eventDate">วันเดือนปีจัดงาน <span class="req">*</span></label>
+            <input type="date" id="eventDate" required />
+          </div>
+          <div class="form-group full-width">
+            <label for="location">สถานที่จัดงาน <span class="req">*</span></label>
+            <textarea id="location" rows="2" placeholder="ระบุสถานที่จัดงาน..." required></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Package Info -->
+      <div class="card">
+        <h2 class="card-title">
+          <span class="card-icon">📸</span> รายละเอียดงาน
+        </h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="photographerPackage">จำนวนช่างภาพ</label>
+            <div class="select-wrapper">
+              <select id="photographerPackage">
+                <option value="ช่างภาพ 1 คน">ช่างภาพ 1 คน</option>
+                <option value="ช่างภาพ 2 คน">ช่างภาพ 2 คน</option>
+                <option value="ช่างภาพ 2 คน พร้อมผู้ช่วยช่างภาพ">ช่างภาพ 2 คน พร้อมผู้ช่วยช่างภาพ</option>
+                <option value="ช่างภาพพร้อมช่างวีดีโอ">ช่างภาพพร้อมช่างวีดีโอ</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="scanOption">ระบบสแกนรับภาพหน้างาน</label>
+            <div class="select-wrapper">
+              <select id="scanOption">
+                <option value="เพิ่มสแกนรับภาพ">เพิ่มสแกนรับภาพ</option>
+                <option value="ไม่เพิ่มสแกนรับภาพ">ไม่เพิ่มสแกนรับภาพ</option>
+                <option value="แถมฟรีสแกนรับภาพ">แถมฟรีสแกนรับภาพ</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <label for="timeSlot">ช่วงเวลาการถ่ายภาพ</label>
+            <div class="select-wrapper">
+              <select id="timeSlot">
+                <option value="07.00-12.00 น.">07.00–12.00 น.</option>
+                <option value="07.00-17.00 น.">07.00–17.00 น.</option>
+                <option value="07.00-12.00 / 16.00-20.00 น.">07.00–12.00 / 16.00–20.00 น.</option>
+                <option value="07.00-20.00 น.">07.00–20.00 น.</option>
+                <option value="กำหนดเอง">กำหนดเอง</option>
+              </select>
+            </div>
+          </div>
+          <!-- Custom Time -->
+          <div class="form-group custom-time-group" id="customTimeGroup" style="display:none;">
+            <label>เวลาเริ่มต้น</label>
+            <input type="time" id="timeStart" value="09:00" />
+          </div>
+          <div class="form-group custom-time-group" id="customTimeGroup2" style="display:none;">
+            <label>เวลาสิ้นสุด</label>
+            <input type="time" id="timeEnd" value="17:00" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Service Details -->
+      <div class="card">
+        <h2 class="card-title">
+          <span class="card-icon">✨</span> รายละเอียดบริการ
+        </h2>
+        <ul class="service-list">
+          <li><span class="check-icon">✓</span> ถ่ายภาพไม่จำกัดจำนวนภาพ</li>
+          <li><span class="check-icon">✓</span> ปรับแสงสีทุกภาพที่ส่ง</li>
+          <li><span class="check-icon">✓</span> ชุดไฟส่องสว่างจุดช่างภาพถ่ายภาพ</li>
+          <li><span class="check-icon">✓</span> หลังจบงาน ไม่เกิน 2 สัปดาห์ รับภาพทั้งหมด</li>
+          <li><span class="check-icon">✓</span> ส่งภาพทาง Google Photo</li>
+          <li><span class="check-icon">✓</span> ฟรีค่าเดินทาง</li>
+          <li><span class="check-icon">✓</span> ราคานำเสนอครบจบไม่มีบวกเพิ่ม</li>
+        </ul>
+
+        <div class="form-group" style="margin-top: 16px;">
+          <label for="gift">ของแถมเพิ่มเติม</label>
+          <div class="select-wrapper">
+            <select id="gift">
+              <option value="ไม่มีของแถม">ไม่มีของแถม</option>
+              <option value="แถมภาพ 4x6 นิ้ว">แถมภาพ 4×6 นิ้ว</option>
+              <option value="แถม USB บันทึกภาพ">แถม USB บันทึกภาพ</option>
+              <option value="แถมภาพ 4x6 นิ้ว พร้อม USB บันทึกภาพ">แถมภาพ 4×6 นิ้ว พร้อม USB บันทึกภาพ</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="card">
+        <h2 class="card-title">
+          <span class="card-icon">💰</span> สรุปยอดค่าใช้จ่าย
+        </h2>
+        <div class="pricing-grid">
+          <div class="pricing-row">
+            <label for="totalAmount">ยอดรวมทั้งหมด (บาท)</label>
+            <input type="number" id="totalAmount" placeholder="0" min="0" />
+          </div>
+          <div class="pricing-row">
+            <label for="deposit">มัดจำ (บาท)</label>
+            <input type="number" id="deposit" placeholder="0" min="0" />
+          </div>
+          <div class="pricing-divider"></div>
+          <div class="pricing-row remaining-row">
+            <label>คงเหลือ (บาท)</label>
+            <div class="remaining-value" id="remainingDisplay">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-primary" id="btnSave">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          บันทึกข้อมูล
+        </button>
+        <button class="btn btn-secondary" id="btnSaveJPG">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          บันทึกเป็น JPG
+        </button>
+        <button class="btn btn-outline" id="btnPrint">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          พิมพ์ใบจอง
+        </button>
+        <button class="btn btn-danger" id="btnClear">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          ล้างข้อมูล
+        </button>
+      </div>
+
+    </section>
+
+    <!-- RIGHT: PREVIEW -->
+    <section class="preview-section">
+      <div class="preview-sticky">
+        <div class="preview-header-label">
+          <span>ตัวอย่างใบจอง</span>
+          <span class="live-badge">● LIVE</span>
+        </div>
+        <div class="booking-preview" id="bookingPreview">
+          <!-- Preview Logo -->
+          <div class="preview-brand">
+            <div class="preview-logo-box">
+              <svg width="32" height="32" viewBox="0 0 38 38" fill="none">
+                <rect width="38" height="38" rx="8" fill="#111"/>
+                <circle cx="19" cy="19" r="8" stroke="white" stroke-width="2.5"/>
+                <circle cx="19" cy="19" r="4" fill="white"/>
+                <rect x="25" y="8" width="5" height="3.5" rx="1" fill="white"/>
+              </svg>
+            </div>
+            <div>
+              <div class="preview-brand-name">SOOK JAI PIX</div>
+              <div class="preview-brand-sub">ระบบจองคิวช่างภาพ</div>
+            </div>
+          </div>
+
+          <div class="preview-divider"></div>
+
+          <div class="preview-booking-no-row">
+            <div>
+              <div class="preview-label">เลขที่ใบจอง</div>
+              <div class="preview-booking-no" id="pvBookingNo">BK-20260610-001</div>
+            </div>
+            <div class="preview-date-col">
+              <div class="preview-label">วันที่ออกใบจอง</div>
+              <div class="preview-value" id="pvIssueDate">10/06/2569</div>
+            </div>
+          </div>
+
+          <div class="preview-divider"></div>
+
+          <div class="preview-section-title">ข้อมูลผู้จอง</div>
+          <div class="preview-info-grid">
+            <div class="preview-info-item">
+              <span class="preview-label">ชื่อผู้จอง</span>
+              <span class="preview-value" id="pvCustomerName">–</span>
+            </div>
+            <div class="preview-info-item">
+              <span class="preview-label">เบอร์ติดต่อ</span>
+              <span class="preview-value" id="pvPhone">–</span>
+            </div>
+            <div class="preview-info-item full">
+              <span class="preview-label">วันจัดงาน</span>
+              <span class="preview-value" id="pvEventDate">–</span>
+            </div>
+            <div class="preview-info-item full">
+              <span class="preview-label">สถานที่จัดงาน</span>
+              <span class="preview-value" id="pvLocation">–</span>
+            </div>
+          </div>
+
+          <div class="preview-divider"></div>
+
+          <div class="preview-section-title">รายละเอียดบริการ</div>
+          <div class="preview-info-grid">
+            <div class="preview-info-item full">
+              <span class="preview-label">จำนวนช่างภาพ</span>
+              <span class="preview-value" id="pvPhotographer">ช่างภาพ 1 คน</span>
+            </div>
+            <div class="preview-info-item full">
+              <span class="preview-label">ระบบสแกนรับภาพ</span>
+              <span class="preview-value" id="pvScan">เพิ่มสแกนรับภาพ</span>
+            </div>
+            <div class="preview-info-item full">
+              <span class="preview-label">ช่วงเวลาถ่ายภาพ</span>
+              <span class="preview-value" id="pvTime">07.00–12.00 น.</span>
+            </div>
+            <div class="preview-info-item full">
+              <span class="preview-label">ของแถม</span>
+              <span class="preview-value" id="pvGift">ไม่มีของแถม</span>
+            </div>
+          </div>
+
+          <div class="preview-divider"></div>
+
+          <div class="preview-section-title">บริการที่ได้รับ</div>
+          <ul class="preview-service-list">
+            <li>✓ ถ่ายภาพไม่จำกัดจำนวนภาพ</li>
+            <li>✓ ปรับแสงสีทุกภาพที่ส่ง</li>
+            <li>✓ ชุดไฟส่องสว่างจุดช่างภาพถ่ายภาพ</li>
+            <li>✓ หลังจบงาน ไม่เกิน 2 สัปดาห์ รับภาพทั้งหมด</li>
+            <li>✓ ส่งภาพทาง Google Photo</li>
+            <li>✓ ฟรีค่าเดินทาง</li>
+            <li>✓ ราคานำเสนอครบจบไม่มีบวกเพิ่ม</li>
+          </ul>
+
+          <div class="preview-divider"></div>
+
+          <div class="preview-pricing">
+            <div class="preview-price-row">
+              <span>ยอดรวมทั้งหมด</span>
+              <span id="pvTotal">฿0</span>
+            </div>
+            <div class="preview-price-row">
+              <span>มัดจำ</span>
+              <span id="pvDeposit">฿0</span>
+            </div>
+            <div class="preview-price-divider"></div>
+            <div class="preview-price-row remaining">
+              <span>คงเหลือ</span>
+              <span id="pvRemaining">฿0</span>
+            </div>
+          </div>
+
+          <div class="preview-footer">
+            <p>ขอบคุณที่ไว้วางใจ Sook Jai Pix</p>
+            <p class="preview-footer-sub">เอกสารนี้ออกจากระบบจองคิวช่างภาพ</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== BOOKING LIST MODAL ===== -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="bookingListModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h2 id="modalTitle">รายการจองทั้งหมด</h2>
+        <div class="modal-header-actions">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="ค้นหาชื่อ, เบอร์, เลขที่ใบจอง..." />
+          </div>
+          <button class="btn-close" id="btnCloseModal" aria-label="ปิด">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body" id="bookingListBody">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
