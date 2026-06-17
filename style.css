@@ -1,0 +1,1083 @@
+/* ==========================================================================
+   Sook Jai Pix - CSS Design System & Styles
+   Aesthetics: Premium Clean Light Mode, Minimalist, Elegant Ticket Perforation
+   ========================================================================== */
+
+/* --- CSS Variables & Color Tokens --- */
+:root {
+    --bg-main: #f8fafc; /* Slate 50 */
+    --bg-card: #ffffff; /* Pure white */
+    --bg-ticket: #ffffff; /* Pure white */
+    --bg-ticket-gradient: linear-gradient(180deg, #ffffff 0%, #fcfcfc 100%);
+    
+    --border-glass: #cbd5e1; /* Slate 200 */
+    --border-glass-focus: #4f46e5; /* Indigo 600 */
+    
+    --text-primary: #0f172a; /* Slate 900 */
+    --text-secondary: #475569; /* Slate 600 */
+    --text-muted: #94a3b8; /* Slate 400 */
+    
+    --primary-grad: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    --primary-color: #4f46e5;
+    --secondary-color: #2563eb;
+    --accent-success: #059669; /* Emerald 600 */
+    --accent-warning: #d97706; /* Amber 600 */
+    --accent-error: #dc2626; /* Red 600 */
+    
+    --glow-shadow: 0 10px 25px rgba(79, 70, 229, 0.08);
+    --ticket-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+    --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
+    
+    --font-primary: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* --- Global Reset & Basics --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    line-height: 1.6;
+}
+
+/* --- Ambient Light Background Decor (Pastel Orbs) --- */
+.glass-bg-decor {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(140px);
+    z-index: -1;
+    opacity: 0.55;
+    pointer-events: none;
+    transition: all 1s ease;
+    transform: translate3d(0, 0, 0); /* Force GPU composite layer */
+    will-change: transform;
+}
+.decor-1 {
+    width: 600px;
+    height: 600px;
+    background: #e0e7ff; /* Soft Indigo */
+    top: -200px;
+    left: -200px;
+}
+.decor-2 {
+    width: 600px;
+    height: 600px;
+    background: #fae8ff; /* Soft Pink */
+    bottom: -250px;
+    right: -200px;
+}
+.decor-3 {
+    width: 400px;
+    height: 400px;
+    background: #e0f2fe; /* Soft Sky Blue */
+    top: 30%;
+    left: 40%;
+}
+
+/* --- App Container & Layout --- */
+.app-container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- App Header --- */
+.app-header {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.brand-logo-container {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.brand-logo-img {
+    height: 120px; /* Elegant height for script signature logo */
+    width: auto;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+}
+
+.brand-logo-img svg {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+}
+
+.app-header .subtitle {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    font-weight: 400;
+}
+
+/* --- Main Grid Layout --- */
+.app-main-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 40px;
+    align-items: start;
+    flex-grow: 1;
+}
+
+/* --- Clean White Panel --- */
+.glass-panel {
+    background: var(--bg-card);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 24px;
+    padding: 35px;
+    box-shadow: var(--card-shadow);
+}
+
+.panel-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 20px;
+}
+
+.panel-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
+}
+
+.panel-header .section-icon {
+    color: var(--primary-color);
+}
+
+.panel-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 5px;
+    font-weight: 400;
+}
+
+/* --- Form Fields & Grid Elements --- */
+.form-group-wrapper {
+    margin-bottom: 30px;
+}
+
+.form-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.5px;
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.input-container label {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.checkbox-wrapper label {
+    font-size: 0.8rem !important;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+    font-weight: 400 !important;
+}
+
+.required {
+    color: var(--accent-error);
+}
+
+/* --- Input Wrapper and Elements --- */
+.input-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--text-muted);
+    font-size: 1rem;
+    pointer-events: none;
+    transition: color 0.3s ease;
+}
+
+.input-icon-wrapper input,
+.input-icon-wrapper textarea {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-icon-wrapper input:hover,
+.input-icon-wrapper textarea:hover {
+    border-color: #94a3b8;
+}
+
+.input-icon-wrapper input:focus,
+.input-icon-wrapper textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.input-icon-wrapper input:focus + .input-icon,
+.input-icon-wrapper textarea:focus + .input-icon {
+    color: var(--primary-color);
+}
+
+/* Prefix wrapper for Pricing inputs */
+.prefix-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-prefix {
+    position: absolute;
+    left: 16px;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.prefix-wrapper input {
+    padding-left: 32px;
+}
+
+/* Disabled Form Field styling */
+.disabled-field input {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: var(--accent-warning) !important;
+    font-weight: 600;
+    cursor: not-allowed;
+}
+
+/* Styling for inputs that are disabled via HTML attribute */
+.input-icon-wrapper:has(input:disabled) input {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: var(--text-muted) !important;
+    cursor: not-allowed;
+}
+
+.input-icon-wrapper:has(input:disabled) .input-icon {
+    color: var(--text-muted) !important;
+    opacity: 0.5;
+}
+
+/* Hide required asterisk for disabled input containers */
+.input-container:has(input:disabled) .required {
+    display: none;
+}
+
+.textarea-wrapper textarea {
+    resize: none;
+}
+
+/* --- Job Type Button Cards --- */
+.job-types-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    width: 100%;
+}
+
+.job-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-secondary);
+}
+
+.job-card:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+.job-card .card-icon {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.job-card span {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Active State for job card */
+.job-card.active {
+    background: rgba(79, 70, 229, 0.04);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.05);
+    color: var(--primary-color);
+}
+
+.job-card.active .card-icon {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+/* --- Stepper Component for Photographers --- */
+.stepper-wrapper {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 6px;
+    justify-content: space-between;
+}
+
+.btn-step {
+    background: #f1f5f9;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-step:hover {
+    background: #cbd5e1;
+}
+
+.stepper-wrapper input {
+    background: transparent;
+    border: none;
+    width: 40px;
+    text-align: center;
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    outline: none;
+}
+
+/* Hide arrow spinner in number input */
+.stepper-wrapper input::-webkit-outer-spin-button,
+.stepper-wrapper input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.stepper-unit {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-right: 10px;
+}
+
+/* --- Time Preset Chips --- */
+.time-presets {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.time-chip {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.time-chip:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    color: var(--text-primary);
+}
+
+/* --- Ticket Live Preview (Right Column) --- */
+.preview-section {
+    position: relative;
+    width: 100%;
+}
+
+.preview-sticky {
+    position: sticky;
+    top: 40px;
+}
+
+/* Ticket Container wrapper */
+#ticket-capture-area {
+    padding: 10px 0;
+    width: 100%;
+}
+
+/* Ticket main card styling */
+.ticket-card {
+    background: var(--bg-ticket);
+    background-image: 
+        /* Subtle diagonal security lines */
+        repeating-linear-gradient(45deg, rgba(15, 23, 42, 0.012) 0px, rgba(15, 23, 42, 0.012) 1px, transparent 1px, transparent 12px),
+        /* Subtle dot grid pattern */
+        radial-gradient(rgba(15, 23, 42, 0.035) 1.2px, transparent 1.2px),
+        var(--bg-ticket-gradient);
+    background-size: 100% 100%, 24px 24px, 100% 100%;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: var(--ticket-shadow);
+    color: var(--text-primary);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Ticket Header styling */
+.ticket-header {
+    padding: 24px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ticket-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ticket-logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.ticket-logo-img {
+    height: 100px; /* Elegant size for signature logo on the ticket */
+    width: auto;
+    max-width: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+}
+
+.ticket-logo-img svg {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+}
+
+.ticket-tag {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    font-weight: 500;
+}
+
+.ticket-id-badge {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket-id-title {
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+}
+
+.ticket-id-val {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+/* Perforation line connector */
+.ticket-divider {
+    position: relative;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ticket-circle {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: var(--bg-main); /* Match outer background to hide */
+    border-radius: 50%;
+    z-index: 2;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.ticket-circle.left {
+    left: -10px;
+    border-right: 1px solid #e2e8f0;
+    box-shadow: inset -3px 0 5px rgba(0, 0, 0, 0.03);
+}
+
+.ticket-circle.right {
+    right: -10px;
+    border-left: 1px solid #e2e8f0;
+    box-shadow: inset 3px 0 5px rgba(0, 0, 0, 0.03);
+}
+
+.ticket-line {
+    width: calc(100% - 20px);
+    border-top: 1.5px dashed #cbd5e1;
+}
+
+/* Ticket Body Content styling */
+.ticket-body {
+    padding: 20px 28px;
+}
+
+.ticket-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 24px;
+    margin-bottom: 24px;
+}
+
+.info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info-block.full-width {
+    grid-column: span 2;
+}
+
+.info-label {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.info-val {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.info-val.highlighted-val {
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.location-val {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+}
+
+.location-val i {
+    color: var(--accent-error);
+    margin-top: 3px;
+    font-size: 0.9rem;
+}
+
+.ticket-meta-grid {
+    display: flex;
+    gap: 30px;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 14px 0;
+    margin-bottom: 24px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.meta-label {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.meta-val {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.meta-val.badge {
+    background: #f1f5f9;
+    color: var(--primary-color);
+    border: 1px solid #cbd5e1;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Inclusions list style */
+.ticket-inclusions {
+    margin-bottom: 20px;
+}
+
+.inclusion-title {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 10px;
+    border-left: 2px solid var(--primary-color);
+    padding-left: 8px;
+}
+
+.inclusions-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.inclusions-list li {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.inclusions-list li i {
+    color: var(--accent-success);
+    font-size: 0.9rem;
+}
+
+/* Additional details styling */
+.ticket-notes {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 15px;
+}
+
+.notes-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 8px 12px;
+    border-left: 2px solid #cbd5e1;
+}
+
+/* Ticket Footer (Bottom Part) */
+.ticket-footer {
+    padding: 24px 28px 28px 28px;
+}
+
+.pricing-summary-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 16px 20px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.price-val {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+
+.price-val.deposit-highlight {
+    color: var(--secondary-color);
+}
+
+.total-row {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+.total-row .price-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.price-val.balance-highlight {
+    font-size: 1.25rem;
+    color: var(--accent-warning);
+    font-weight: 700;
+}
+
+/* Document Issue Date and Time Container */
+.ticket-issue-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed #cbd5e1;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.issue-label {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.issue-val {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* --- Action Buttons (Save, Share) --- */
+.actions-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 25px;
+}
+
+.btn-action {
+    padding: 16px 24px;
+    border-radius: 14px;
+    border: none;
+    font-family: var(--font-primary);
+    font-size: 0.98rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-icon {
+    font-size: 1.15rem;
+}
+
+/* Primary Button (Save Image) - Clean Apple Style */
+.btn-primary {
+    background: #0f172a;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
+    background: #1e293b;
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+}
+
+/* Secondary Button (Google Calendar) */
+.btn-secondary {
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+}
+
+.btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+    transform: translateY(1px);
+}
+
+/* --- Margins & Helpers --- */
+.margin-top-md {
+    margin-top: 15px;
+}
+
+/* --- App Footer Credits --- */
+.app-footer-credits {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+/* ==========================================================================
+   Responsive Design & Media Queries
+   ========================================================================== */
+
+/* Tablet & Smaller Desktop Screens */
+@media (max-width: 1024px) {
+    .app-main-grid {
+        grid-template-columns: 1fr;
+        gap: 35px;
+    }
+    
+    .preview-sticky {
+        position: static;
+    }
+    
+    .app-container {
+        padding: 24px 16px;
+    }
+}
+
+/* Mobile Devices */
+@media (max-width: 600px) {
+    .logo {
+        font-size: 1.8rem;
+    }
+    
+    .app-header .subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .glass-panel {
+        padding: 24px 20px;
+    }
+    
+    .form-grid-2, .form-grid-3 {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .job-types-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .job-types-grid button:last-child {
+        grid-column: span 2;
+    }
+    
+    .job-card {
+        padding: 14px 10px;
+    }
+    
+    .job-card .card-icon {
+        font-size: 1.15rem;
+    }
+    
+    .ticket-header {
+        padding: 16px 20px;
+    }
+    
+    .ticket-body {
+        padding: 16px 20px;
+    }
+    
+    .ticket-info-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+    
+    .info-block.full-width {
+        grid-column: span 1;
+    }
+    
+    .ticket-meta-grid {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    
+    .ticket-footer {
+        padding: 16px 20px 20px 20px;
+    }
+    
+    .ticket-stub-details {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .text-center-mobile {
+        text-align: center;
+    }
+}
+
+/* --- Connection Status Indicator Styling --- */
+.connection-status-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 14px;
+}
+
+.connection-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.03);
+    font-size: 0.72rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--text-muted);
+}
+
+/* Connection States */
+.connection-status.online {
+    color: var(--accent-success);
+    border-color: rgba(5, 150, 105, 0.2);
+    background: rgba(5, 150, 105, 0.03);
+}
+
+.connection-status.online .status-dot {
+    background-color: var(--accent-success);
+    box-shadow: 0 0 8px var(--accent-success);
+    animation: pulse-green 2s infinite;
+}
+
+.connection-status.offline {
+    color: var(--accent-error);
+    border-color: rgba(220, 38, 38, 0.2);
+    background: rgba(220, 38, 38, 0.03);
+}
+
+.connection-status.offline .status-dot {
+    background-color: var(--accent-error);
+    box-shadow: 0 0 8px var(--accent-error);
+    animation: pulse-red 2s infinite;
+}
+
+/* Connection status pulse animations */
+@keyframes pulse-green {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.6);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(5, 150, 105, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(5, 150, 105, 0);
+    }
+}
+
+@keyframes pulse-red {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+}
