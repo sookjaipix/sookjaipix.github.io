@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sookjai-pix-cache-v10';
+const CACHE_NAME = 'sookjai-pix-cache-v12';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -42,7 +42,10 @@ self.addEventListener('fetch', event => {
   if (!event.request.url.startsWith('http')) return;
 
   // Bypass service worker caching for API calls
-  if (event.request.url.includes('/api/')) {
+  if (event.request.url.includes('/api/') || 
+      event.request.url.includes('api.sheetbest.com') ||
+      event.request.url.includes('script.google.com') ||
+      event.request.url.includes('script.googleusercontent.com')) {
     event.respondWith(fetch(event.request));
     return;
   }

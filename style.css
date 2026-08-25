@@ -1572,3 +1572,87 @@ body {
         box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
     }
 }
+
+/* --- Search Date Filter Styling --- */
+.recent-bookings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.recent-bookings-header h3 {
+    margin: 0;
+}
+
+.search-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input-wrapper .search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    pointer-events: none;
+}
+
+.search-input-wrapper input[type="date"] {
+    padding: 8px 12px 8px 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    font-family: var(--font-primary);
+    outline: none;
+    transition: all 0.2s ease;
+    height: 38px;
+}
+
+.search-input-wrapper input[type="date"]:focus {
+    border-color: var(--border-glass-focus);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.btn-clear-search {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-glass);
+    background: rgba(79, 70, 229, 0.06);
+    color: var(--primary-color);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    height: 38px;
+    font-family: var(--font-primary);
+}
+
+.btn-clear-search:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+body.dark-theme .btn-clear-search {
+    background: rgba(129, 138, 248, 0.08);
+    color: var(--border-glass-focus);
+}
+
+body.dark-theme .btn-clear-search:hover {
+    background: var(--border-glass-focus);
+    color: #090d16;
+}

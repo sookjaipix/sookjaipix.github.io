@@ -70,6 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const bookingsTableBody = document.getElementById('bookings-table-body');
     const dbMonthlyTableBody = document.getElementById('db-monthly-table-body');
     const toastContainer = document.getElementById('toast-container');
+    const searchDateInput = document.getElementById('search-date');
+    const btnClearSearch = document.getElementById('btn-clear-search');
 
 
 
@@ -85,17 +87,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const tomorrowStr = tomorrow.toISOString().split('T')[0];
     bookingDateInput.value = tomorrowStr;
 
-    // --- Helper Functions ---
-    function getApiUrl(path) {
-        // If running on file protocol, target localhost:8000
-        if (window.location.protocol === 'file:') {
-            return `http://localhost:8000${path}`;
+    // --- Google Sheets Connection Config (Google Apps Script Web App URL or Sheetbest URL) ---
+    const GOOGLE_SCRIPT_URL = 'https://api.sheetbest.com/sheets/0e4d686d-0ae9-4143-96f1-19ae084b900f'; // REPLACE WITH YOUR GOOGLE WEB APP URL
+
+    // Helper to determine if we are using Google Apps Script or Sheetbest
+    function isGoogleScriptUrl() {
+        return GOOGLE_SCRIPT_URL.includes('script.google.com');
+    }
+
+    // Translate English property keys to Thai columns in Google Sheets
+    function serializeBooking(booking) {
+        const serviceOption = booking.serviceOption || "รับภาพด่วน";
+        return {
+            "ชื่อผู้จอง": booking.clientName || "",
+            "เบอร์ติดต่อ": booking.clientPhone || "",
+            "ลิงก์ Facebook": booking.clientFacebook || "",
+            "จองคิวงานวันที่": booking.date || "",
+            "สถานที่": booking.location || "",
+            "ประเภทงาน": booking.jobType || "",
+            "จำนวนช่างภาพ": booking.photographers || "",
+            "ช่วงเวลา": booking.timeSlot || "",
+            "รับภาพด่วน": serviceOption === "รับภาพด่วน" ? "✓" : "",
+            "รับภาพปกติ": serviceOption === "รับภาพปกติ" ? "✓" : "",
+            "ข้อมูลเพิ่มเติม": booking.notes || "",
+            "ยอดรวม": booking.total || 0,
+            "มัดจำ": booking.deposit || 0,
+            "คงเหลือ": booking.balance || 0,
+            "id": booking.id || "",
+            "timestamp": booking.timestamp || new Date().getTime()
+        };
+    }
+
+    // Translate Google Sheets Thai columns back to English property keys
+    function deserializeBooking(row) {
+        let serviceOption = "รับภาพด่วน";
+        if (row["รับภาพปกติ"] === "✓") {
+            serviceOption = "รับภาพปกติ";
+        } else if (row["รับภาพด่วน"] === "✓") {
+            serviceOption = "รับภาพด่วน";
         }
-        // If running on different port (like Live Server 5500), target the same host but port 8000
-        if (window.location.port && window.location.port !== '8000') {
-            return `${window.location.protocol}//${window.location.hostname}:8000${path}`;
-        }
-        return path;
+
+        return {
+            id: row["id"] || "",
+            clientName: row["ชื่อผู้จอง"] || "",
+            clientPhone: row["เบอร์ติดต่อ"] || "",
+            clientFacebook: row["ลิงก์ Facebook"] || "",
+            date: row["จองคิวงานวันที่"] || "ยังไม่ระบุ",
+            location: row["สถานที่"] || "",
+            jobType: row["ประเภทงาน"] || "ซ้อมใหญ่",
+            photographers: row["จำนวนช่างภาพ"] || "1",
+            timeSlot: row["ช่วงเวลา"] || "",
+            serviceOption: serviceOption,
+            notes: row["ข้อมูลเพิ่มเติม"] || "",
+            total: parseFloat(row["ยอดรวม"]) || 0,
+            deposit: parseFloat(row["มัดจำ"]) || 0,
+            balance: parseFloat(row["คงเหลือ"]) || 0,
+            timestamp: parseInt(row["timestamp"]) || new Date().getTime()
+        };
     }
     
     // Format Issue Date & Time (Buddhist Era and local time of export)
@@ -177,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
             "ถ่ายภาพไม่จำกัดจำนวนภาพ",
             "ปรับแสงสีทุกภาพที่ส่ง",
             "ส่งภาพทาง Google Photos",
-            "ช่วยจัดท่าทางและแนะนำสารที่ถ่ายภาพ",
+            "ช่วยจัดท่าทางและแนะนำสถานที่ถ่ายภาพ",
             "หลังถ่ายเสร็จไม่เกิน 5 วัน รับภาพทั้งหมด"
         ],
         "รับภาพปกติ": [
@@ -242,13 +290,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load bookings from SQLite Database API
     function loadBookingsFromStorage() {
-        return fetch(getApiUrl('/api/bookings'))
+        const fetchUrl = isGoogleScriptUrl()
+            ? `${GOOGLE_SCRIPT_URL}?action=read`
+            : GOOGLE_SCRIPT_URL;
+
+        return fetch(fetchUrl)
             .then(res => {
                 if (!res.ok) throw new Error("API response error");
                 return res.json();
             })
             .then(data => {
-                bookingsList = data || [];
+                const rawList = data || [];
+                // Filter out empty rows or header rows if any
+                const validRows = rawList.filter(row => row.id || row['ชื่อผู้จอง']);
+                bookingsList = validRows.map(deserializeBooking);
                 dbMode = 'api';
                 updateOnlineStatus();
                 // Save fallback copy
@@ -371,17 +426,26 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderBookingsTable() {
         if (!bookingsTableBody) return;
         
-        if (bookingsList.length === 0) {
+        let filteredList = [...bookingsList];
+        const hasSearch = searchDateInput && searchDateInput.value;
+        if (hasSearch) {
+            const queryDate = searchDateInput.value; // YYYY-MM-DD
+            filteredList = filteredList.filter(item => item.date === queryDate);
+        }
+
+        if (filteredList.length === 0) {
             bookingsTableBody.innerHTML = `
                 <tr>
-                    <td colspan="8" class="text-center text-muted" style="padding: 20px;">ไม่มีข้อมูลการจองที่บันทึกไว้</td>
+                    <td colspan="8" class="text-center text-muted" style="padding: 20px;">
+                        ${hasSearch ? 'ไม่พบข้อมูลการจองในวันที่ระบุ' : 'ไม่มีข้อมูลการจองที่บันทึกไว้'}
+                    </td>
                 </tr>
             `;
             return;
         }
 
         // Sort by date descending
-        const sortedList = [...bookingsList].sort((a, b) => {
+        const sortedList = filteredList.sort((a, b) => {
             if (a.date === 'ยังไม่ระบุ' || !a.date) return 1;
             if (b.date === 'ยังไม่ระบุ' || !b.date) return -1;
             return b.date.localeCompare(a.date);
@@ -491,19 +555,38 @@ document.addEventListener('DOMContentLoaded', () => {
             total,
             deposit,
             balance,
-            timestamp: new Date().getTime()
+            timestamp: new Date().getTime(),
+            serviceOption: serviceOptionValueInput ? serviceOptionValueInput.value : 'รับภาพด่วน'
         };
 
         const existingIndex = bookingsList.findIndex(item => item.id === bookingId);
         const isUpdate = existingIndex > -1;
+        
+        const isGas = isGoogleScriptUrl();
+        const serialized = serializeBooking(bookingData);
+        
+        const fetchUrl = isGas 
+            ? GOOGLE_SCRIPT_URL 
+            : (isUpdate ? `${GOOGLE_SCRIPT_URL}/id/${bookingId}` : GOOGLE_SCRIPT_URL);
+            
+        const fetchOptions = isGas
+            ? {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: isUpdate ? 'update' : 'create',
+                    id: bookingId,
+                    data: serialized
+                })
+              }
+            : {
+                method: isUpdate ? 'PATCH' : 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(serialized)
+              };
 
-        fetch(getApiUrl('/api/bookings'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bookingData)
-        })
+        fetch(fetchUrl, fetchOptions)
         .then(res => {
             if (!res.ok) throw new Error("API post failed");
             return res.json();
@@ -560,6 +643,19 @@ document.addEventListener('DOMContentLoaded', () => {
         depositPriceInput.value = item.deposit;
         balancePriceInput.value = item.balance;
         
+        // Handle service option packages selection
+        const serviceOpt = item.serviceOption || 'รับภาพด่วน';
+        if (serviceOptionValueInput) {
+            serviceOptionValueInput.value = serviceOpt;
+        }
+        serviceCards.forEach(card => {
+            if (card.getAttribute('data-option') === serviceOpt) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+        });
+        
         // Handle Date TBD checkbox
         if (bookingDateTbdCheckbox) {
             const wrapper = bookingDateInput.closest('.input-icon-wrapper');
@@ -607,9 +703,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Delete booking from storage
     function deleteBooking(bookingId) {
-        fetch(getApiUrl(`/api/bookings?id=${bookingId}`), {
-            method: 'DELETE'
-        })
+        const isGas = isGoogleScriptUrl();
+        const fetchUrl = isGas 
+            ? GOOGLE_SCRIPT_URL 
+            : `${GOOGLE_SCRIPT_URL}/id/${bookingId}`;
+            
+        const fetchOptions = isGas
+            ? {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'delete',
+                    id: bookingId
+                })
+              }
+            : {
+                method: 'DELETE'
+              };
+
+        fetch(fetchUrl, fetchOptions)
         .then(res => {
             if (!res.ok) throw new Error("API delete failed");
             return res.json();
@@ -826,6 +937,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
     totalPriceInput.addEventListener('input', updateCalculations);
     depositPriceInput.addEventListener('input', updateCalculations);
+
+    // Search input date handlers
+    if (searchDateInput) {
+        searchDateInput.addEventListener('change', () => {
+            renderBookingsTable();
+        });
+    }
+
+    if (btnClearSearch) {
+        btnClearSearch.addEventListener('click', () => {
+            searchDateInput.value = '';
+            renderBookingsTable();
+        });
+    }
 
     // Booking Date TBD Checkbox handler
     if (bookingDateTbdCheckbox) {
@@ -1061,7 +1186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             if (dbMode === 'api') {
                 statusEl.className = 'connection-status online';
-                statusTextEl.innerHTML = '<i class="fa-solid fa-server" style="margin-right: 4px;"></i>ออนไลน์ (SQLite)';
+                statusTextEl.innerHTML = '<i class="fa-solid fa-cloud" style="margin-right: 4px;"></i>ออนไลน์ (Google Sheets)';
             } else {
                 statusEl.className = 'connection-status offline local-mode';
                 statusTextEl.innerHTML = '<i class="fa-solid fa-database" style="margin-right: 4px;"></i>โหมดเครื่อง (Local)';
@@ -1086,9 +1211,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnClearAll) {
         btnClearAll.addEventListener('click', () => {
             if (confirm("คุณต้องการล้างข้อมูลคิวงานทั้งหมดหรือไม่?")) {
-                fetch(getApiUrl('/api/bookings/clear'), {
-                    method: 'POST'
-                })
+                const isGas = isGoogleScriptUrl();
+                const fetchUrl = GOOGLE_SCRIPT_URL;
+                const fetchOptions = isGas
+                    ? {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            action: 'clear'
+                        })
+                      }
+                    : {
+                        method: 'DELETE'
+                      };
+
+                fetch(fetchUrl, fetchOptions)
                 .then(res => {
                     if (!res.ok) throw new Error("API clear failed");
                     return res.json();

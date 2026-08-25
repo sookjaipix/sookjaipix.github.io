@@ -461,7 +461,18 @@
             
             <!-- Recent Bookings List Table -->
             <div class="recent-bookings-list margin-top-lg">
-                <h3><i class="fa-solid fa-list-ul"></i> รายการคิวงานที่บันทึกไว้</h3>
+                <div class="recent-bookings-header">
+                    <h3><i class="fa-solid fa-list-ul"></i> รายการคิวงานที่บันทึกไว้</h3>
+                    <div class="search-filter-container">
+                        <div class="search-input-wrapper">
+                            <i class="fa-solid fa-calendar-day search-icon"></i>
+                            <input type="date" id="search-date" placeholder="ค้นหาด้วยวันที่">
+                        </div>
+                        <button type="button" id="btn-clear-search" class="btn-clear-search" title="ล้างการค้นหา">
+                            <i class="fa-solid fa-rotate-left"></i> แสดงทั้งหมด
+                        </button>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="bookings-table">
                         <thead>
