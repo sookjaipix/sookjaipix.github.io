@@ -176,15 +176,48 @@ document.addEventListener('DOMContentLoaded', () => {
         if (bookingDateTbdCheckbox && bookingDateTbdCheckbox.checked) {
             return 'ยังไม่ระบุวันถ่ายภาพ';
         }
-        if (!dateString) return 'ยังไม่ระบุวันถ่ายภาพ';
+        if (!dateString || dateString === 'ยังไม่ระบุ') return 'ยังไม่ระบุวันถ่ายภาพ';
         
-        // Parse date strictly in local time zone to avoid TZ shifts
-        const parts = dateString.split('-');
-        if (parts.length !== 3) return dateString;
+        let dateObj;
         
-        const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+        if (dateString instanceof Date) {
+            dateObj = dateString;
+        } else {
+            const dateStr = String(dateString).trim();
+            
+            if (dateStr.includes('T')) {
+                // ISO format: "2026-06-18T17:00:00.000Z"
+                dateObj = new Date(dateStr);
+            } else if (dateStr.includes('/') || dateStr.includes('-')) {
+                const separator = dateStr.includes('/') ? '/' : '-';
+                const parts = dateStr.split(separator);
+                
+                if (parts.length === 3) {
+                    if (parts[0].length === 4) {
+                        // YYYY-MM-DD
+                        let year = parseInt(parts[0]);
+                        if (year > 2400) year -= 543;
+                        dateObj = new Date(year, parseInt(parts[1]) - 1, parseInt(parts[2]));
+                    } else if (parts[2].length === 4) {
+                        // DD-MM-YYYY
+                        let year = parseInt(parts[2]);
+                        if (year > 2400) year -= 543;
+                        dateObj = new Date(year, parseInt(parts[1]) - 1, parseInt(parts[0]));
+                    } else {
+                        dateObj = new Date(dateStr);
+                    }
+                } else {
+                    dateObj = new Date(dateStr);
+                }
+            } else {
+                dateObj = new Date(dateStr);
+            }
+        }
         
-        // Native Thai formatter with Buddhist Era (พ.ศ.)
+        if (!dateObj || isNaN(dateObj.getTime())) {
+            return dateString;
+        }
+        
         return dateObj.toLocaleDateString('th-TH', {
             day: 'numeric',
             month: 'short',
@@ -436,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (filteredList.length === 0) {
             bookingsTableBody.innerHTML = `
                 <tr>
-                    <td colspan="8" class="text-center text-muted" style="padding: 20px;">
+                    <td colspan="9" class="text-center text-muted" style="padding: 20px;">
                         ${hasSearch ? 'ไม่พบข้อมูลการจองในวันที่ระบุ' : 'ไม่มีข้อมูลการจองที่บันทึกไว้'}
                     </td>
                 </tr>
@@ -486,6 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="font-family: 'Inter', sans-serif; font-weight: 500;">${item.id}</td>
                 <td style="font-weight: 500;">${item.clientName}</td>
                 <td><span class="${badgeClass}" style="${badgeStyle}">${item.jobType}</span></td>
+                <td>${item.location || '-'}</td>
                 <td>${dateDisplay}</td>
                 <td style="font-family: 'Inter', sans-serif;">฿${formatCurrency(item.total)}</td>
                 <td style="font-family: 'Inter', sans-serif; color: var(--secondary-color);">฿${formatCurrency(item.deposit)}</td>
