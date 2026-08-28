@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bookingDateInput.value = tomorrowStr;
 
     // --- Google Sheets Connection Config (Google Apps Script Web App URL or Sheetbest URL) ---
-    const GOOGLE_SCRIPT_URL = 'https://api.sheetbest.com/sheets/0e4d686d-0ae9-4143-96f1-19ae084b900f'; // REPLACE WITH YOUR GOOGLE WEB APP URL
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmUx9WgccOqYugGegRnnSWwCARW17BVVCq_7EYFtwjEk6BuzKw94ue0PyTDPOutAOZ/exec';
 
     // Helper to determine if we are using Google Apps Script or Sheetbest
     function isGoogleScriptUrl() {
