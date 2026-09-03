@@ -17,7 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('booking-form');
     const clientNameInput = document.getElementById('client-name');
     const clientPhoneInput = document.getElementById('client-phone');
+    const clientPhoneTbdCheckbox = document.getElementById('client-phone-tbd');
+    const clientPhoneRequiredSpan = document.getElementById('client-phone-required');
     const clientFacebookInput = document.getElementById('client-facebook');
+    const clientFacebookTbdCheckbox = document.getElementById('client-facebook-tbd');
     const bookingDateInput = document.getElementById('booking-date');
     const bookingLocationInput = document.getElementById('booking-location');
     const jobTypeValueInput = document.getElementById('job-type-value');
@@ -79,6 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Generate a fixed 3-digit random suffix for the Booking ID on load
     const randomSuffix = Math.floor(100 + Math.random() * 900);
     let previousDateVal = ''; // store date if toggled TBD
+    let previousPhoneVal = ''; // store phone if toggled TBD
+    let previousFacebookVal = ''; // store facebook if toggled TBD
     let dbMode = 'api'; // 'api' or 'local'
 
     // Set default date to tomorrow's date
@@ -556,8 +561,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const clientName = clientNameInput.value.trim();
-        const clientPhone = clientPhoneInput.value.trim();
-        const clientFacebook = clientFacebookInput ? clientFacebookInput.value.trim() : '';
+        const clientPhoneTbd = clientPhoneTbdCheckbox && clientPhoneTbdCheckbox.checked;
+        const clientPhone = clientPhoneTbd ? 'ไม่ระบุ' : clientPhoneInput.value.trim();
+        const clientFacebookTbd = clientFacebookTbdCheckbox && clientFacebookTbdCheckbox.checked;
+        const clientFacebook = clientFacebookTbd ? 'ไม่ระบุ' : (clientFacebookInput ? clientFacebookInput.value.trim() : '');
         const dateVal = bookingDateInput.value || 'ยังไม่ระบุ';
         const isTbd = bookingDateTbdCheckbox && bookingDateTbdCheckbox.checked;
         const location = bookingLocationInput.value.trim();
@@ -664,8 +671,46 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!item) return;
 
         clientNameInput.value = item.clientName;
-        clientPhoneInput.value = item.clientPhone;
-        if (clientFacebookInput) clientFacebookInput.value = item.clientFacebook || '';
+        
+        // Handle Client Phone TBD checkbox
+        if (clientPhoneTbdCheckbox) {
+            const wrapper = clientPhoneInput.closest('.input-icon-wrapper');
+            if (item.clientPhone === 'ไม่ระบุ' || item.clientPhone === 'ยังไม่ระบุ' || item.clientPhone === 'ไม่ระบุเบอร์ติดต่อ') {
+                clientPhoneTbdCheckbox.checked = true;
+                clientPhoneInput.value = '';
+                clientPhoneInput.disabled = true;
+                clientPhoneInput.required = false;
+                if (wrapper) wrapper.classList.add('disabled-field');
+                if (clientPhoneRequiredSpan) clientPhoneRequiredSpan.style.display = 'none';
+            } else {
+                clientPhoneTbdCheckbox.checked = false;
+                clientPhoneInput.disabled = false;
+                clientPhoneInput.required = true;
+                clientPhoneInput.value = item.clientPhone || '';
+                if (wrapper) wrapper.classList.remove('disabled-field');
+                if (clientPhoneRequiredSpan) clientPhoneRequiredSpan.style.display = 'inline';
+            }
+        } else {
+            clientPhoneInput.value = (item.clientPhone === 'ไม่ระบุ' || item.clientPhone === 'ยังไม่ระบุ') ? '' : (item.clientPhone || '');
+        }
+
+        // Handle Client Facebook TBD checkbox
+        if (clientFacebookTbdCheckbox && clientFacebookInput) {
+            const wrapper = clientFacebookInput.closest('.input-icon-wrapper');
+            if (item.clientFacebook === 'ไม่ระบุ' || item.clientFacebook === 'ยังไม่ระบุ' || item.clientFacebook === 'ไม่ระบุ ลิงก์ Facebook') {
+                clientFacebookTbdCheckbox.checked = true;
+                clientFacebookInput.value = '';
+                clientFacebookInput.disabled = true;
+                if (wrapper) wrapper.classList.add('disabled-field');
+            } else {
+                clientFacebookTbdCheckbox.checked = false;
+                clientFacebookInput.disabled = false;
+                clientFacebookInput.value = item.clientFacebook || '';
+                if (wrapper) wrapper.classList.remove('disabled-field');
+            }
+        } else if (clientFacebookInput) {
+            clientFacebookInput.value = (item.clientFacebook === 'ไม่ระบุ' || item.clientFacebook === 'ยังไม่ระบุ') ? '' : (item.clientFacebook || '');
+        }
         bookingLocationInput.value = item.location;
         photographerCountInput.value = item.photographers;
         bookingTimeInput.value = item.timeSlot;
@@ -839,7 +884,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function syncFormToTicket() {
         // Simple text values
         previewName.innerText = clientNameInput.value.trim() || 'ยังไม่ได้ระบุชื่อ';
-        previewPhone.innerText = clientPhoneInput.value.trim() || 'ยังไม่ได้ระบุเบอร์';
+        const isPhoneTbd = clientPhoneTbdCheckbox && clientPhoneTbdCheckbox.checked;
+        previewPhone.innerText = isPhoneTbd 
+            ? 'ไม่ระบุเบอร์ติดต่อ' 
+            : (clientPhoneInput.value.trim() || 'ยังไม่ได้ระบุเบอร์');
         
         const loc = bookingLocationInput.value.trim();
         previewLocation.innerHTML = loc 
@@ -936,7 +984,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     clientPhoneInput.addEventListener('input', () => {
-        previewPhone.innerText = clientPhoneInput.value.trim() || 'ยังไม่ได้ระบุเบอร์';
+        const isPhoneTbd = clientPhoneTbdCheckbox && clientPhoneTbdCheckbox.checked;
+        previewPhone.innerText = isPhoneTbd ? 'ไม่ระบุเบอร์ติดต่อ' : (clientPhoneInput.value.trim() || 'ยังไม่ได้ระบุเบอร์');
     });
     
     bookingLocationInput.addEventListener('input', () => {
@@ -1001,6 +1050,46 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             previewDate.innerText = formatThaiDate(bookingDateInput.value);
             updateBookingId();
+        });
+    }
+
+    // Client Phone TBD Checkbox handler
+    if (clientPhoneTbdCheckbox) {
+        clientPhoneTbdCheckbox.addEventListener('change', () => {
+            const wrapper = clientPhoneInput.closest('.input-icon-wrapper');
+            if (clientPhoneTbdCheckbox.checked) {
+                previousPhoneVal = clientPhoneInput.value;
+                clientPhoneInput.value = '';
+                clientPhoneInput.disabled = true;
+                clientPhoneInput.required = false;
+                if (wrapper) wrapper.classList.add('disabled-field');
+                if (clientPhoneRequiredSpan) clientPhoneRequiredSpan.style.display = 'none';
+                previewPhone.innerText = 'ไม่ระบุเบอร์ติดต่อ';
+            } else {
+                clientPhoneInput.disabled = false;
+                clientPhoneInput.required = true;
+                clientPhoneInput.value = previousPhoneVal;
+                if (wrapper) wrapper.classList.remove('disabled-field');
+                if (clientPhoneRequiredSpan) clientPhoneRequiredSpan.style.display = 'inline';
+                previewPhone.innerText = clientPhoneInput.value.trim() || 'ยังไม่ได้ระบุเบอร์';
+            }
+        });
+    }
+
+    // Client Facebook TBD Checkbox handler
+    if (clientFacebookTbdCheckbox && clientFacebookInput) {
+        clientFacebookTbdCheckbox.addEventListener('change', () => {
+            const wrapper = clientFacebookInput.closest('.input-icon-wrapper');
+            if (clientFacebookTbdCheckbox.checked) {
+                previousFacebookVal = clientFacebookInput.value;
+                clientFacebookInput.value = '';
+                clientFacebookInput.disabled = true;
+                if (wrapper) wrapper.classList.add('disabled-field');
+            } else {
+                clientFacebookInput.disabled = false;
+                clientFacebookInput.value = previousFacebookVal;
+                if (wrapper) wrapper.classList.remove('disabled-field');
+            }
         });
     }
 
@@ -1100,8 +1189,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const clientName = clientNameInput.value.trim();
-        const clientPhone = clientPhoneInput.value.trim();
-        const clientFacebook = clientFacebookInput ? clientFacebookInput.value.trim() : '';
+        const clientPhoneTbd = clientPhoneTbdCheckbox && clientPhoneTbdCheckbox.checked;
+        const clientPhone = clientPhoneTbd ? 'ไม่ระบุ' : clientPhoneInput.value.trim();
+        const clientFacebookTbd = clientFacebookTbdCheckbox && clientFacebookTbdCheckbox.checked;
+        const clientFacebook = clientFacebookTbd ? 'ไม่ระบุ' : (clientFacebookInput ? clientFacebookInput.value.trim() : '');
         const dateVal = bookingDateInput.value; // YYYY-MM-DD
         
         if (!dateVal) {

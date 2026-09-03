@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sookjai-pix-cache-v12';
+const CACHE_NAME = 'sookjai-pix-cache-v14';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
